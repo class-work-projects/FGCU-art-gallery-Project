@@ -83,7 +83,7 @@ app/
 - Deferred image loading (loading="lazy")
 
 ## 🎥 **Demo Video:**  
-[Watch the FGCU Art Gallery Demo on Google Drive](https://drive.google.com/uc?export=view&id=13tr2y0_ZaUmgaS50z08Zqy6F03MEDm-j)
+[Watch the FGCU Art Gallery Demo on Google Drive](https://drive.google.com/file/d/13tr2y0_ZaUmgaS50z08Zqy6F03MEDm-j/view)
 
 A short walkthrough of the FGCU Art Gallery web app demonstrating Dataverse integration, artwork browsing, and responsive design.
 
