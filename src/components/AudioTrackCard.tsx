@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { buildDownloadFileUrl } from '../api/dataverseClient';
 import { motion } from 'framer-motion';
-// seconds
+
 interface Props {
   fileId: string;
   title: string;
