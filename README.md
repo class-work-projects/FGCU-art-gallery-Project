@@ -92,11 +92,11 @@ A short walkthrough of the FGCU Art Gallery web app demonstrating Dataverse inte
 This project was developed collaboratively as part of **CEN 3031 – Software Engineering Fundamentals** at **Florida Gulf Coast University**.
 
 **Team Members**
-- Zach Van — Team Lead / Frontend Integration  
-- Marco Sanchez — Documentation & System Testing  
-- Christian Fernandez — [Role TBD]  
-- Abigail Morris — [Role TBD]  
-- Kenneth Jimenez — [Role TBD]  
+- Zach Van** — Team Lead / Frontend Integration  
+- Abigail Morris** — Lead PowerPoint Development; Audio Debugging
+- Marco Sanchez** — Documentation, Audio Debugging, and System Testing  
+- Christian Fernandez** — PowerPoint Slide Development
+- Kenneth Jimenez** — PowerPoint Slide Development and Visuals  
 
 **Instructor:** Dr. Chengyi Qu
 
