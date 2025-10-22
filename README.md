@@ -82,11 +82,11 @@ app/
 - Responsive CSS grid, mobile-first
 - Deferred image loading (loading="lazy")
 
-## 🎥 **Demo Video:** 
- 
-[![Watch the demo]([https://drive.google.com/file/d/13tr2y0_ZaUmgaS50z08Zqy6F03MEDm-j/view?usp=sharing](https://drive.google.com/file/d/13tr2y0_ZaUmgaS50z08Zqy6F03MEDm-j/view?usp=sharing))
+## 🎥 **Demo Video:**  
+[Watch the FGCU Art Gallery Demo on Google Drive](https://drive.google.com/uc?export=view&id=13tr2y0_ZaUmgaS50z08Zqy6F03MEDm-j)
 
 A short walkthrough of the FGCU Art Gallery web app demonstrating Dataverse integration, artwork browsing, and responsive design.
+
 
 ## Contributors
 This project was developed collaboratively as part of **CEN 3031 – Software Engineering Fundamentals** at **Florida Gulf Coast University**.
