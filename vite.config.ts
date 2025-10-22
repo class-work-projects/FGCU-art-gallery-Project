@@ -15,12 +15,12 @@ export default defineConfig(({ mode }) => {
     server: {
       port,
       host: true,
-      ...(allowedHosts && { hmr: { host: allowedHosts[0] } }),
-      proxy: allowedHosts ? undefined : {}
+      allowedHosts: allowedHosts || ['localhost', '.localhost']
     },
     preview: {
       port,
-      host: true
+      host: true,
+      allowedHosts: allowedHosts || ['localhost', '.localhost']
     }
   };
 });
