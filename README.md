@@ -93,7 +93,7 @@ This project was developed collaboratively as part of **CEN 3031 – Software En
 
 **Team Members**
 - Zach Van** — Team Lead / Frontend Integration  
-- Abigail Morris** — Lead PowerPoint Development; Audio Debugging
+- Abigail Morris** — Lead PowerPoint Development, Audio Debugging and Implemented Docker Configuration
 - Marco Sanchez** — Documentation, Audio Debugging, and System Testing  
 - Christian Fernandez** — PowerPoint Slide Development
 - Kenneth Jimenez** — PowerPoint Slide Development and Visuals  
