@@ -84,7 +84,7 @@ app/
 
 ## 🎥 **Demo Video:** 
  
-[![Watch the demo](https://drive.google.com/file/d/13tr2y0_ZaUmgaS50z08Zqy6F03MEDm-j/view?usp=sharing)
+[![Watch the demo]([https://drive.google.com/file/d/13tr2y0_ZaUmgaS50z08Zqy6F03MEDm-j/view?usp=sharing](https://drive.google.com/file/d/13tr2y0_ZaUmgaS50z08Zqy6F03MEDm-j/view?usp=sharing))
 
 A short walkthrough of the FGCU Art Gallery web app demonstrating Dataverse integration, artwork browsing, and responsive design.
 
