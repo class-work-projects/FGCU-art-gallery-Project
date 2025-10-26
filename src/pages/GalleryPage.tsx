@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import ArtworkCard from '../components/ArtworkCard';
 import { useImageDatasets } from '../hooks/useImageDatasets';
+import LoadingIcon from '../components/LoadingIcon';
 
 export default function GalleryPage() {
   const [query, setQuery] = useState('');
@@ -21,7 +22,7 @@ export default function GalleryPage() {
         </div>
       </div>
 
-      {isLoading && <div className="text-sm text-neutral-500">Loading artworks...</div>}
+      {isLoading && <LoadingIcon />}
 
       <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
         {datasets?.map(ds => {
