@@ -30,6 +30,7 @@ export default function AudioPage() {
               placeholder="Search audio tracks..."
               className="w-full px-4 py-3 rounded-xl bg-white/80 dark:bg-neutral-800/80 border border-purple-200/50 dark:border-purple-700/50 text-sm backdrop-blur transition-all duration-300 hover:shadow-md hover:shadow-purple-500/20 dark:hover:shadow-purple-400/20 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-purple-500"
             />
+          </div>
         </div>
       </div>
 
