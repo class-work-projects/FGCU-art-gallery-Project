@@ -57,12 +57,17 @@ export default function AudioTrackCard({ fileId, title, description, datasetPers
   const pct = duration ? (progress / duration) * 100 : 0;
 
   return (
-    <motion.div layout className={`group bg-white/60 dark:bg-neutral-800/60 backdrop-blur rounded-xl border border-neutral-200 dark:border-neutral-700 overflow-hidden shadow-sm hover:shadow-md transition-colors ${active ? 'ring-2 ring-brand-500' : ''}`}> 
+    <motion.div 
+      layout 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className={`group bg-gradient-to-br from-white/80 to-purple-50/80 dark:from-neutral-800/80 dark:to-purple-900/80 backdrop-blur rounded-xl border border-purple-200/50 dark:border-purple-700/50 overflow-hidden shadow-sm hover:shadow-lg hover:shadow-purple-500/20 dark:hover:shadow-purple-400/20 transition-all duration-300 hover:-translate-y-1 ${active ? 'ring-2 ring-purple-500' : ''}`}> 
       <div className="p-4 flex flex-col gap-3">
         <div className="flex items-start gap-4">
           <button
             onClick={handleToggle}
-            className="relative w-12 h-12 rounded-lg bg-brand-600 text-white flex items-center justify-center hover:bg-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-400"
+            className="relative w-12 h-12 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-500 dark:to-pink-500 text-white flex items-center justify-center hover:shadow-lg hover:shadow-purple-500/30 dark:hover:shadow-purple-400/30 transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-purple-400"
             aria-label={active ? 'Pause' : 'Play'}
           >
             {loading ? (
@@ -77,8 +82,10 @@ export default function AudioTrackCard({ fileId, title, description, datasetPers
             <h3 className="font-medium text-sm line-clamp-1">{title}</h3>
             {description && <p className="text-xs text-neutral-500 dark:text-neutral-400 line-clamp-2 mt-0.5">{description}</p>}
             <div className="mt-2">
-              <div className="h-2 w-full bg-neutral-200 dark:bg-neutral-700 rounded overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-brand-500 to-brand-400 transition-all" style={{ width: `${pct}%` }} />
+              <div className="h-2.5 w-full bg-neutral-200/50 dark:bg-neutral-700/50 rounded-full overflow-hidden backdrop-blur">
+                <div 
+                  className="h-full bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 dark:from-purple-400 dark:via-pink-400 dark:to-blue-400 transition-all animate-shimmer" 
+                  style={{ width: `${pct}%` }} />
               </div>
               <div className="flex justify-between text-[10px] uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mt-1">
                 <span>{formatTime(progress)}</span>
@@ -88,7 +95,15 @@ export default function AudioTrackCard({ fileId, title, description, datasetPers
           </div>
         </div>
         {datasetPersistentId && (
-          <a href={`#/artwork/${encodeURIComponent(datasetPersistentId)}`} className="text-[10px] font-medium text-brand-600 dark:text-brand-400 hover:underline">View Dataset</a>
+          <a 
+            href={`#/artwork/${encodeURIComponent(datasetPersistentId)}`} 
+            className="inline-flex items-center gap-1 px-2 py-1 text-[10px] font-medium rounded-full bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900 dark:to-pink-900 text-purple-700 dark:text-purple-300 hover:shadow-md hover:shadow-purple-500/20 dark:hover:shadow-purple-400/20 transition-all duration-300 hover:-translate-y-0.5 group-hover:scale-105"
+          >
+            View Dataset
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
+          </a>
         )}
       </div>
       <audio ref={audioRef} preload="metadata" src={buildDownloadFileUrl(fileId)} />
