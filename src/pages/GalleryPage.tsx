@@ -1,11 +1,8 @@
 import { useState } from 'react';
 import ArtworkCard from '../components/ArtworkCard';
 import { useImageDatasets } from '../hooks/useImageDatasets';
-<<<<<<< HEAD
 import FilterSelector from '../components/FilterSelector';
-=======
 import LoadingIcon from '../components/LoadingIcon';
->>>>>>> 5ae576c4a22acaf60b7966733c34499abcf92707
 
 export default function GalleryPage() {
   const [query, setQuery] = useState('');
@@ -37,19 +34,7 @@ export default function GalleryPage() {
         </div>
       </div>
 
-<<<<<<< HEAD
-      {isLoading && (
-        <div className="flex items-center justify-center gap-2 text-sm text-neutral-500">
-          <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-          </svg>
-          Loading artworks...
-        </div>
-      )}
-=======
       {isLoading && <LoadingIcon />}
->>>>>>> 5ae576c4a22acaf60b7966733c34499abcf92707
 
       <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 animate-[fadeIn_0.5s_ease-in-out]">
         {datasets?.map(ds => {
