@@ -10,13 +10,14 @@ interface ImageDataset {
   representativeFull?: string;
 }
 
-async function fetchImageDatasets(query: string): Promise<ImageDataset[]> {
+async function fetchImageDatasets(query: string, filters?: { fq?: string[] }): Promise<ImageDataset[]> {
   // 1. Search datasets
   const data = await searchArtworks({
     q: query || '*',
     type: ['dataset'],
     per_page: 50,
-    show_facets: false
+    show_facets: false,
+    fq: filters?.fq
   });
 
   const datasets = data.items.filter((i: any) => i.type === 'dataset');
@@ -56,10 +57,10 @@ async function fetchImageDatasets(query: string): Promise<ImageDataset[]> {
   return results;
 }
 
-export function useImageDatasets(query: string) {
+export function useImageDatasets(query: string, filters?: { fq?: string[] }) {
   return useQuery({
-    queryKey: ['imageDatasets', query],
-    queryFn: () => fetchImageDatasets(query),
+    queryKey: ['imageDatasets', query, filters],
+    queryFn: () => fetchImageDatasets(query, filters),
     staleTime: 1000 * 60
   });
 }

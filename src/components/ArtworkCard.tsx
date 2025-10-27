@@ -19,6 +19,8 @@ interface Props {
 export default function ArtworkCard({ id, title, description, authors, thumbnailUrl, fullImageUrl, fileCount, datasetPersistentId, image, linkTo, externalHref }: Props) {
   return (
     <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -6 }}
       whileTap={{ scale: 0.98 }}
       className="group relative rounded-xl overflow-hidden bg-gradient-to-br from-neutral-50 to-neutral-100 dark:from-neutral-800 dark:to-neutral-900 border border-neutral-200/70 dark:border-neutral-700/70 shadow-sm hover:shadow-lg transition-all flex flex-col backdrop-blur-sm"
