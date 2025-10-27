@@ -11,14 +11,14 @@ export default function GalleryPage() {
 
   return (
     <div className="flex flex-col gap-12">
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-50 to-neutral-50 dark:from-neutral-900 dark:to-neutral-800 p-8 -mx-6">
-        <div className="absolute inset-0 bg-grid-neutral-700/[0.2] [mask-image:linear-gradient(0deg,transparent,black)] dark:bg-grid-neutral-200/[0.2]" />
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-50 via-pink-50 to-amber-50 dark:from-purple-900 dark:via-pink-900 dark:to-amber-900 p-8 -mx-6 animate-pulse-glow">
+        <div className="absolute inset-0 bg-grid-neutral-700/[0.2] [mask-image:linear-gradient(0deg,transparent,black)] dark:bg-grid-neutral-200/[0.2] animate-shimmer" />
         <div className="relative flex flex-col gap-6 max-w-[85rem] mx-auto">
           <div className="space-y-4">
-            <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-br from-neutral-900 to-neutral-600 dark:from-white dark:to-neutral-400 bg-clip-text text-transparent animate-slide-in">
+            <h1 className="text-5xl font-bold tracking-tight bg-gradient-to-r from-purple-600 via-pink-500 to-amber-500 dark:from-purple-400 dark:via-pink-300 dark:to-amber-300 bg-clip-text text-transparent animate-slide-in animate-float">
               Art Gallery
             </h1>
-            <p className="text-neutral-600 dark:text-neutral-300 max-w-2xl text-lg font-light leading-relaxed animate-fade-in" style={{ animationDelay: '0.2s' }}>
+            <p className="text-neutral-600 dark:text-neutral-300 max-w-2xl text-lg font-light leading-relaxed animate-fade-in bg-gradient-to-r from-purple-600/10 to-amber-500/10 dark:from-purple-400/10 dark:to-amber-300/10 p-4 rounded-lg backdrop-blur-sm" style={{ animationDelay: '0.2s' }}>
               Explore artworks contributed by FGCU professors and art majors. Search datasets that contain high-resolution images and audio related to campus art.
             </p>
           </div>

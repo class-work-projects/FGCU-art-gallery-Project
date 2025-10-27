@@ -105,7 +105,7 @@ export default function FilterSelector({
           <select
             value={mode}
             onChange={(e) => setMode(e.target.value as Mode)}
-            className="rounded-xl border border-neutral-200/50 dark:border-neutral-700/50 bg-white/80 dark:bg-neutral-800/80 backdrop-blur px-3 py-2 text-sm shadow-sm transition-shadow duration-200 hover:shadow-md focus-ring"
+            className="rounded-xl border border-purple-200/50 dark:border-purple-700/50 bg-white/80 dark:bg-neutral-800/80 backdrop-blur px-3 py-2 text-sm shadow-sm transition-all duration-300 hover:shadow-md hover:shadow-purple-500/20 dark:hover:shadow-purple-400/20 hover:-translate-y-0.5 focus-ring"
           >
             <option value="none">Select type...</option>
             <option value="subject">Subject</option>
@@ -204,7 +204,7 @@ export default function FilterSelector({
           {activeFilters.map((filter, index) => (
             <span
               key={index}
-              className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-brand-100 dark:bg-brand-900 text-brand-700 dark:text-brand-300 text-sm hover-lift animate-scale-in"
+              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900 dark:to-pink-900 text-purple-700 dark:text-purple-300 text-sm hover-lift animate-scale-in hover:shadow-lg hover:shadow-purple-500/20 dark:hover:shadow-purple-400/20 transition-all duration-300"
             >
               <span className="font-medium">{filter.type}:</span> {filter.label || filter.value}
               <button
@@ -226,7 +226,7 @@ export default function FilterSelector({
               setValue('');
               onChange(undefined);
             }}
-            className="text-sm text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300 hover:underline"
+            className="text-sm px-3 py-1.5 rounded-lg bg-gradient-to-r from-red-100 to-pink-100 dark:from-red-900 dark:to-pink-900 text-red-700 dark:text-red-300 hover:shadow-lg hover:shadow-red-500/20 dark:hover:shadow-red-400/20 transition-all duration-300 hover:-translate-y-0.5"
           >
             Clear all
           </button>
