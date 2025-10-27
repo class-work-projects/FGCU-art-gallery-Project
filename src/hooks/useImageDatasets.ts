@@ -12,8 +12,10 @@ interface ImageDataset {
 
 async function fetchImageDatasets(query: string, filters?: { fq?: string[] }): Promise<ImageDataset[]> {
   // 1. Search datasets
+  const searchQuery = query ? `*${query}*` : '*';
+  
   const data = await searchArtworks({
-    q: query || '*',
+    q: searchQuery,
     type: ['dataset'],
     per_page: 50,
     show_facets: false,
