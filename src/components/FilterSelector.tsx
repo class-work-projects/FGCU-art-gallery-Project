@@ -6,7 +6,14 @@ const SUBJECTS = [
   'Digital Art',
   'Installation',
   'Drawing',
-  'Mixed Media'
+  'Mixed Media',
+  'Printmaking',
+  'Ceramics',
+  'Textiles',
+  'Performance Art',
+  'Video Art',
+  'Street Art',
+  'Conceptual Art'
 ];
 
 const DATE_RANGES = [
@@ -91,9 +98,9 @@ export default function FilterSelector({
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 animate-slide-in">
       <div className="flex flex-col sm:flex-row sm:items-center sm:gap-3 gap-2">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 animate-scale-in">
           <label className="text-sm font-medium text-neutral-600 dark:text-neutral-300">Filter by:</label>
           <select
             value={mode}
@@ -197,7 +204,7 @@ export default function FilterSelector({
           {activeFilters.map((filter, index) => (
             <span
               key={index}
-              className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-brand-100 dark:bg-brand-900 text-brand-700 dark:text-brand-300 text-sm"
+              className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-brand-100 dark:bg-brand-900 text-brand-700 dark:text-brand-300 text-sm hover-lift animate-scale-in"
             >
               <span className="font-medium">{filter.type}:</span> {filter.label || filter.value}
               <button
