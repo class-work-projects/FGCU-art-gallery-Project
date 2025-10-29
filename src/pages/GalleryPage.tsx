@@ -23,12 +23,22 @@ export default function GalleryPage() {
             </p>
           </div>
           <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+            <div className="relative w-full sm:w-96">
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search by title, author, subject..."
               className="w-full sm:w-96 rounded-xl border border-neutral-200/50 dark:border-neutral-700/50 bg-white/80 dark:bg-neutral-800/80 backdrop-blur px-4 py-3 text-sm shadow-sm transition-all duration-200 hover:shadow-md focus:shadow-md focus-ring hover:-translate-y-0.5"
             />
+            {query && (
+              <button
+              onClick={() => setQuery('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300"
+              >
+                x 
+                </button>
+            )}
+            </div>
             <FilterSelector onChange={setFilters} />
           </div>
         </div>
