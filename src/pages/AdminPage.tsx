@@ -167,6 +167,7 @@ export default function AdminPage() {
                   setDescription('');
                   setFile(null);
                   setPreview(null);
+                  if (fileInputRef.current) fileInputRef.current.value = '';
                   
                   // Simulate success state reset
                   setTimeout(() => {
