@@ -1,46 +1,85 @@
+name: CI/CD Pipeline
+
 on:
   push:
     branches:
       - main
+      - develop
+      - feature/*
       - CICD
   pull_request:
     branches:
       - main
-  
+      - develop
+
 jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
 
-    docker-build:
-        permissions:
-          contents: write
-          packages: write
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v3
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-            - name: Set up Docker Buildx
-              uses: docker/setup-buildx-action@v2
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
 
-            - name: Docker Login
-              run: echo ${{secrets.GITHUB_TOKEN}} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - name: Install dependencies
+        run: npm ci
 
-            - name: Generate Docker tags
-              id: meta
-              run: |
-                COMMIT_SHA=${{ github.sha }}
-                SHORT_SHA=${COMMIT_SHA:0:7}
-                BRANCH_NAME=${{ github.ref_name }}
-                
-                if [ "$BRANCH_NAME" = "main" ]; then
-                  echo "tags=ghcr.io/class-work-projects/artgalleryproject:latest,ghcr.io/class-work-projects/artgalleryproject:${SHORT_SHA}" >> $GITHUB_OUTPUT
-                else
-                  echo "tags=ghcr.io/class-work-projects/artgalleryproject:${SHORT_SHA}" >> $GITHUB_OUTPUT
-                fi
+      - name: Run unit tests
+        run: npm test -- --passWithNoTests
 
-            - name: Build and push Docker image
-              uses: docker/build-push-action@v4
-              with:
-                  context: .
-                  push: true
-                  platforms: linux/amd64,linux/arm64
-                  tags: ${{ steps.meta.outputs.tags }}
+      - name: Upload coverage reports
+        if: matrix.node-version == '20.x'
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: coverage/
+          if-no-files-found: ignore
+
+  build:
+    name: Build and Push Docker Image
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Docker Login
+        run: echo ${{secrets.GITHUB_TOKEN}} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Generate Docker tags
+        id: meta
+        run: |
+          COMMIT_SHA=${{ github.sha }}
+          SHORT_SHA=${COMMIT_SHA:0:7}
+          BRANCH_NAME=${{ github.ref_name }}
+          
+          if [ "$BRANCH_NAME" = "main" ]; then
+            echo "tags=ghcr.io/class-work-projects/artgalleryproject:latest,ghcr.io/class-work-projects/artgalleryproject:${SHORT_SHA}" >> $GITHUB_OUTPUT
+          else
+            echo "tags=ghcr.io/class-work-projects/artgalleryproject:${SHORT_SHA}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: ${{ steps.meta.outputs.tags }}
