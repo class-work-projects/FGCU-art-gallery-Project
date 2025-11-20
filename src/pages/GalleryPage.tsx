@@ -18,7 +18,6 @@ export default function GalleryPage() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // ← ADD THIS FUNCTION
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
