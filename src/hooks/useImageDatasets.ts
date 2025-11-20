@@ -4,10 +4,10 @@ import { searchArtworks, listDatasetFiles, buildDownloadFileUrl, getDataset } fr
 interface ImageDataset {
   persistentId: string;
   title: string;
-  description?: string;
-  representativeFileId?: string;
-  representativeThumb?: string;
-  representativeFull?: string;
+  description: string | undefined;
+  representativeFileId: any;
+  representativeThumb: string;
+  representativeFull: string;
 }
 
 async function fetchImageDatasets(query: string, filters?: { fq?: string[] }): Promise<ImageDataset[]> {

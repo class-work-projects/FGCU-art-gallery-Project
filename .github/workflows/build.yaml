@@ -1,46 +1,144 @@
+name: CI/CD Pipeline
+
 on:
   push:
     branches:
       - main
-      - CICD
+      - develop
+      - feature/*
+      - cicd/*
   pull_request:
     branches:
       - main
-  
+      - develop
+
 jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
 
-    docker-build:
-        permissions:
-          contents: write
-          packages: write
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v3
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-            - name: Set up Docker Buildx
-              uses: docker/setup-buildx-action@v2
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
 
-            - name: Docker Login
-              run: echo ${{secrets.GITHUB_TOKEN}} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - name: Install dependencies
+        run: npm ci
 
-            - name: Generate Docker tags
-              id: meta
-              run: |
-                COMMIT_SHA=${{ github.sha }}
-                SHORT_SHA=${COMMIT_SHA:0:7}
-                BRANCH_NAME=${{ github.ref_name }}
-                
-                if [ "$BRANCH_NAME" = "main" ]; then
-                  echo "tags=ghcr.io/class-work-projects/artgalleryproject:latest,ghcr.io/class-work-projects/artgalleryproject:${SHORT_SHA}" >> $GITHUB_OUTPUT
-                else
-                  echo "tags=ghcr.io/class-work-projects/artgalleryproject:${SHORT_SHA}" >> $GITHUB_OUTPUT
-                fi
+      - name: Run unit tests
+        run: npm test -- --passWithNoTests
 
-            - name: Build and push Docker image
-              uses: docker/build-push-action@v4
-              with:
-                  context: .
-                  push: true
-                  platforms: linux/amd64,linux/arm64
-                  tags: ${{ steps.meta.outputs.tags }}
+      - name: Upload coverage reports
+        if: matrix.node-version == '20.x'
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: coverage/
+          if-no-files-found: ignore
+
+  build:
+    name: Build and Push Docker Image
+    needs: test
+    permissions:
+      contents: write
+      packages: write
+    
+    strategy:
+      matrix:
+        include:
+          - platform: linux/amd64
+            runner: ubuntu-latest
+          - platform: linux/arm64
+            runner: ubuntu-24.04-arm
+    
+    runs-on: ${{ matrix.runner }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Docker Login
+        run: echo ${{secrets.GITHUB_TOKEN}} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Generate Docker tags
+        id: meta
+        run: |
+          COMMIT_SHA=${{ github.sha }}
+          SHORT_SHA=${COMMIT_SHA:0:7}
+          BRANCH_NAME=${{ github.ref_name }}
+          PLATFORM_TAG=$(echo "${{ matrix.platform }}" | sed 's/\//-/g')
+          
+          if [ "$BRANCH_NAME" = "main" ]; then
+            echo "tags=ghcr.io/class-work-projects/artgalleryproject:latest-${PLATFORM_TAG},ghcr.io/class-work-projects/artgalleryproject:${SHORT_SHA}-${PLATFORM_TAG}" >> $GITHUB_OUTPUT
+          else
+            echo "tags=ghcr.io/class-work-projects/artgalleryproject:${SHORT_SHA}-${PLATFORM_TAG}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          platforms: ${{ matrix.platform }}
+          tags: ${{ steps.meta.outputs.tags }}
+
+  create-manifest:
+    name: Create Multi-Arch Manifest
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    
+    steps:
+      - name: Docker Login
+        run: echo ${{secrets.GITHUB_TOKEN}} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Create and push manifest
+        run: |
+          COMMIT_SHA=${{ github.sha }}
+          SHORT_SHA=${COMMIT_SHA:0:7}
+          BRANCH_NAME=${{ github.ref_name }}
+          
+          # Check which images exist
+          IMAGE_LIST_LATEST=""
+          IMAGE_LIST_SHA=""
+          docker pull ghcr.io/class-work-projects/artgalleryproject:latest-linux-amd64 && IMAGE_LIST_LATEST="$IMAGE_LIST_LATEST ghcr.io/class-work-projects/artgalleryproject:latest-linux-amd64"
+          docker pull ghcr.io/class-work-projects/artgalleryproject:latest-linux-arm64 && IMAGE_LIST_LATEST="$IMAGE_LIST_LATEST ghcr.io/class-work-projects/artgalleryproject:latest-linux-arm64"
+          docker pull ghcr.io/class-work-projects/artgalleryproject:${SHORT_SHA}-linux-amd64 && IMAGE_LIST_SHA="$IMAGE_LIST_SHA ghcr.io/class-work-projects/artgalleryproject:${SHORT_SHA}-linux-amd64"
+          docker pull ghcr.io/class-work-projects/artgalleryproject:${SHORT_SHA}-linux-arm64 && IMAGE_LIST_SHA="$IMAGE_LIST_SHA ghcr.io/class-work-projects/artgalleryproject:${SHORT_SHA}-linux-arm64"
+          
+          if [ "$BRANCH_NAME" = "main" ]; then
+            # Create latest manifest if any images exist
+            if [ -n "$IMAGE_LIST_LATEST" ]; then
+              docker buildx imagetools create -t ghcr.io/class-work-projects/artgalleryproject:latest $IMAGE_LIST_LATEST
+            else
+              echo "No images found for latest tag, skipping manifest creation."
+            fi
+            
+            # Create SHA manifest if any images exist
+            if [ -n "$IMAGE_LIST_SHA" ]; then
+              docker buildx imagetools create -t ghcr.io/class-work-projects/artgalleryproject:${SHORT_SHA} $IMAGE_LIST_SHA
+            else
+              echo "No images found for SHA tag, skipping manifest creation."
+            fi
+          else
+            # Create SHA manifest for non-main branches if any images exist
+            if [ -n "$IMAGE_LIST_SHA" ]; then
+              docker buildx imagetools create -t ghcr.io/class-work-projects/artgalleryproject:${SHORT_SHA} $IMAGE_LIST_SHA
+            else
+              echo "No images found for SHA tag, skipping manifest creation."
+            fi
+          fi
