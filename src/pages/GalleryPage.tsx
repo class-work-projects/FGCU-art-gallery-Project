@@ -110,7 +110,6 @@ export default function GalleryPage() {
         </button>
       )}
 
-
     </div>
   );
 }
