@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import ArtworkCard from '../components/ArtworkCard';
 import { useImageDatasets } from '../hooks/useImageDatasets';
 import FilterSelector from '../components/FilterSelector';
@@ -7,7 +7,21 @@ import LoadingIcon from '../components/LoadingIcon';
 export default function GalleryPage() {
   const [query, setQuery] = useState('');
   const [filters, setFilters] = useState<{ fq?: string[] } | undefined>(undefined);
+  const [showBackToTop, setShowBackToTop] = useState(false);
   const { data: datasets, isLoading } = useImageDatasets(query, filters);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowBackToTop(window.scrollY > 400);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = useCallback(() => {
+    if (typeof window === 'undefined') return;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
 
   return (
     <div className="flex flex-col gap-12">
@@ -46,6 +60,12 @@ export default function GalleryPage() {
 
       {isLoading && <LoadingIcon />}
 
+      {!isLoading && datasets && datasets.length > 0 && (
+        <div className="text-sm text-neutral-600 dark:text-neutral-400 font-medium">
+          Found {datasets.length} artwork{datasets.length !== 1 ? 's' : ''}
+        </div>
+      )}
+
       <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
         {/* Grid container with staggered animation */}
         {datasets?.map(ds => {
@@ -78,6 +98,19 @@ export default function GalleryPage() {
       {!isLoading && (datasets?.length || 0) === 0 && (
         <div className="text-sm text-neutral-400">No artworks found.</div>
       )}
+      {showBackToTop && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-8 right-8 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:-translate-y-1 z-50"
+          aria-label="Back to top"
+          title="Back to top"
+        >
+          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+          </svg>
+        </button>
+      )}
+
     </div>
   );
 }
