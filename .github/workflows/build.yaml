@@ -112,19 +112,33 @@ jobs:
           SHORT_SHA=${COMMIT_SHA:0:7}
           BRANCH_NAME=${{ github.ref_name }}
           
+          # Check which images exist
+          IMAGE_LIST_LATEST=""
+          IMAGE_LIST_SHA=""
+          docker pull ghcr.io/class-work-projects/artgalleryproject:latest-linux-amd64 && IMAGE_LIST_LATEST="$IMAGE_LIST_LATEST ghcr.io/class-work-projects/artgalleryproject:latest-linux-amd64"
+          docker pull ghcr.io/class-work-projects/artgalleryproject:latest-linux-arm64 && IMAGE_LIST_LATEST="$IMAGE_LIST_LATEST ghcr.io/class-work-projects/artgalleryproject:latest-linux-arm64"
+          docker pull ghcr.io/class-work-projects/artgalleryproject:${SHORT_SHA}-linux-amd64 && IMAGE_LIST_SHA="$IMAGE_LIST_SHA ghcr.io/class-work-projects/artgalleryproject:${SHORT_SHA}-linux-amd64"
+          docker pull ghcr.io/class-work-projects/artgalleryproject:${SHORT_SHA}-linux-arm64 && IMAGE_LIST_SHA="$IMAGE_LIST_SHA ghcr.io/class-work-projects/artgalleryproject:${SHORT_SHA}-linux-arm64"
+          
           if [ "$BRANCH_NAME" = "main" ]; then
-            # Create latest manifest
-            docker buildx imagetools create -t ghcr.io/class-work-projects/artgalleryproject:latest \
-              ghcr.io/class-work-projects/artgalleryproject:latest-linux-amd64 \
-              ghcr.io/class-work-projects/artgalleryproject:latest-linux-arm64
+            # Create latest manifest if any images exist
+            if [ -n "$IMAGE_LIST_LATEST" ]; then
+              docker buildx imagetools create -t ghcr.io/class-work-projects/artgalleryproject:latest $IMAGE_LIST_LATEST
+            else
+              echo "No images found for latest tag, skipping manifest creation."
+            fi
             
-            # Create SHA manifest
-            docker buildx imagetools create -t ghcr.io/class-work-projects/artgalleryproject:${SHORT_SHA} \
-              ghcr.io/class-work-projects/artgalleryproject:${SHORT_SHA}-linux-amd64 \
-              ghcr.io/class-work-projects/artgalleryproject:${SHORT_SHA}-linux-arm64
+            # Create SHA manifest if any images exist
+            if [ -n "$IMAGE_LIST_SHA" ]; then
+              docker buildx imagetools create -t ghcr.io/class-work-projects/artgalleryproject:${SHORT_SHA} $IMAGE_LIST_SHA
+            else
+              echo "No images found for SHA tag, skipping manifest creation."
+            fi
           else
-            # Create SHA manifest for non-main branches
-            docker buildx imagetools create -t ghcr.io/class-work-projects/artgalleryproject:${SHORT_SHA} \
-              ghcr.io/class-work-projects/artgalleryproject:${SHORT_SHA}-linux-amd64 \
-              ghcr.io/class-work-projects/artgalleryproject:${SHORT_SHA}-linux-arm64
+            # Create SHA manifest for non-main branches if any images exist
+            if [ -n "$IMAGE_LIST_SHA" ]; then
+              docker buildx imagetools create -t ghcr.io/class-work-projects/artgalleryproject:${SHORT_SHA} $IMAGE_LIST_SHA
+            else
+              echo "No images found for SHA tag, skipping manifest creation."
+            fi
           fi
