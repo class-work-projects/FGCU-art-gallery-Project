@@ -20,7 +20,6 @@ function Header() {
         <nav className="flex gap-6 text-sm font-medium">
           <Nav activeClassName="text-brand-600" to="/" label="Gallery" />
           <Nav activeClassName="text-brand-600" to="/audio" label="Audio" />
-          <Nav activeClassName="text-brand-600" to="/admin" label="Admin" />
           <ThemeToggle />
         </nav>
       </div>
@@ -46,7 +45,7 @@ function Footer() {
   return (
     <footer className="border-t border-neutral-200 dark:border-neutral-800 py-8 text-sm text-neutral-500">
       <div className="max-w-7xl mx-auto px-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <p>&copy; {new Date().getFullYear()} FGCU Dataverse Gallery. Not affiliated with MoMA.</p>
+        <p>&copy; {new Date().getFullYear()} FGCU Dataverse Gallery.</p>
         <p>
           Powered by{' '}
           <a className="underline hover:text-brand-600" href="https://dataverse.org" target="_blank" rel="noreferrer">
