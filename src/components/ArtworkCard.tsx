@@ -81,39 +81,40 @@ interface ProgressiveImageProps {
 
 function ProgressiveImage({ thumb, full, alt }: ProgressiveImageProps) {
   const id = `img-${Math.random().toString(36).slice(2)}`;
+  // Prefer full image if available, otherwise use thumbnail
+  const initialSrc = full || thumb;
+  const hasFallback = full && thumb;
+  
   return (
     <img
       id={id}
-      src={thumb}
-      data-full={full}
+      src={initialSrc}
+      data-thumb={hasFallback ? thumb : undefined}
       alt={alt}
-      className="w-full h-full object-cover object-center transition-all duration-700 group-hover:scale-[1.03] will-change-transform blur-[1.5px] contrast-110 saturate-125"
+      className={`w-full h-full object-cover object-center transition-all duration-700 group-hover:scale-[1.03] will-change-transform ${hasFallback ? 'blur-[1.5px] contrast-110 saturate-125' : ''}`}
       loading="lazy"
       decoding="async"
       onLoad={(e) => {
         const el = e.currentTarget as HTMLImageElement;
-        // Preload full image if provided
-        const fullSrc = el.dataset.full;
-        if (fullSrc) {
-          const hi = new Image();
-          hi.src = fullSrc;
-          hi.onload = () => {
-            el.src = fullSrc;
-            el.classList.remove('blur-[1.5px]', 'contrast-110', 'saturate-125');
-          };
-        } else {
-            el.classList.remove('blur-[1.5px]','contrast-110','saturate-125');
+        // Remove blur effects once loaded
+        if (hasFallback) {
+          el.classList.remove('blur-[1.5px]', 'contrast-110', 'saturate-125');
         }
       }}
       onError={(e) => {
         const el = e.currentTarget as HTMLImageElement;
-        if (!el.dataset.attempt) {
+        // If full image fails and we have a thumbnail fallback, try it
+        if (!el.dataset.attempt && el.dataset.thumb) {
           el.dataset.attempt = '1';
+          el.src = el.dataset.thumb;
+          el.classList.remove('blur-[1.5px]', 'contrast-110', 'saturate-125');
+        } else if (!el.dataset.attempt || el.dataset.attempt === '1') {
+          el.dataset.attempt = el.dataset.attempt ? '2' : '1';
           if (el.src.includes('imageThumb=true')) {
             el.src = el.src.replace('imageThumb=true', 'imageThumb=preview');
           }
-        } else if (el.dataset.attempt === '1') {
-          el.dataset.attempt = '2';
+        } else if (el.dataset.attempt === '2') {
+          el.dataset.attempt = '3';
           if (el.src.includes('imageThumb=')) {
             el.src = el.src.split('?')[0];
           }
