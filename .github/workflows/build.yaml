@@ -6,7 +6,7 @@ on:
       - main
       - develop
       - feature/*
-      - CICD/*
+      - cicd/*
   pull_request:
     branches:
       - main
