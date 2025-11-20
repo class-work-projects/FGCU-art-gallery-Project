@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  # Production - Single container serving both backend API and frontend
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - VITE_DATAVERSE_BASE_URL=${VITE_DATAVERSE_BASE_URL}
+        - VITE_API_BASE_URL=${VITE_API_BASE_URL:-http://localhost:3001/api}
+        - VITE_USE_BACKEND=${VITE_USE_BACKEND:-true}
+    ports:
+      - "${SERVER_PORT:-3001}:${SERVER_PORT:-3001}"
+    environment:
+      - NODE_ENV=production
+      - DATAVERSE_BASE_URL=${DATAVERSE_BASE_URL}
+      - DATAVERSE_API_TOKEN=${DATAVERSE_API_TOKEN}
+      - SHOW_HIDDEN=${SHOW_HIDDEN}
+      - DATAVERSE_COLLECTIONS=${DATAVERSE_COLLECTIONS}
+      - SERVER_PORT=${SERVER_PORT:-3001}
+      - CORS_ORIGIN=${CORS_ORIGIN:-*}
+    networks:
+      - app-network
+    restart: unless-stopped
+
+networks:
+  app-network:
+    driver: bridge

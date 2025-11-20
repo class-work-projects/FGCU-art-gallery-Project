@@ -96,7 +96,9 @@ export default function AudioTrackCard({ fileId, title, description, datasetPers
         </div>
         {datasetPersistentId && (
           <a 
-            href={`#/artwork/${encodeURIComponent(datasetPersistentId)}`} 
+            href={`https://dataverse.fgcu.edu/dataset.xhtml?persistentId=${datasetPersistentId}`}
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex items-center gap-1 px-2 py-1 text-[10px] font-medium rounded-full bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900 dark:to-pink-900 text-purple-700 dark:text-purple-300 hover:shadow-md hover:shadow-purple-500/20 dark:hover:shadow-purple-400/20 transition-all duration-300 hover:-translate-y-0.5 group-hover:scale-105"
           >
             View Dataset

@@ -1,21 +1,45 @@
-FROM node:20-alpine AS build
+# Multi-stage build for production
+# Stage 1: Build the frontend
+FROM node:20-alpine AS frontend-build
 
 WORKDIR /app
 
-COPY package*.json ./
+# Accept build arguments for Vite environment variables
+ARG VITE_DATAVERSE_BASE_URL
+ARG VITE_API_BASE_URL
+ARG VITE_USE_BACKEND=true
 
+# Set them as environment variables for the build
+ENV VITE_DATAVERSE_BASE_URL=$VITE_DATAVERSE_BASE_URL
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+ENV VITE_USE_BACKEND=$VITE_USE_BACKEND
+
+COPY package*.json ./
 RUN npm install
 
 COPY . .
-
 RUN npm run build
 
-FROM nginx:alpine
+# Stage 2: Setup backend and serve
+FROM node:20-alpine
 
-COPY --from=build /app/dist /usr/share/nginx/html
+WORKDIR /app
 
-COPY src/nginx.conf /etc/nginx/conf.d/default.conf
+# Install production dependencies
+COPY package*.json ./
+RUN npm install --production
 
-EXPOSE 80
+# Copy backend server
+COPY server ./server
 
-CMD ["nginx", "-g", "daemon off;"]
+# Copy built frontend from previous stage
+COPY --from=frontend-build /app/dist ./public
+
+# Copy nginx config (for reference, but we'll serve with Node)
+COPY src/nginx.conf ./nginx.conf
+
+# Expose backend port
+EXPOSE 3001
+
+# Start the backend server
+CMD ["node", "server/index.js"]

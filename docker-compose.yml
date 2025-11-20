@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  # Backend API Proxy Server
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    ports:
+      - "${SERVER_PORT:-3001}:${SERVER_PORT:-3001}"
+    environment:
+      - DATAVERSE_BASE_URL=${DATAVERSE_BASE_URL}
+      - DATAVERSE_API_TOKEN=${DATAVERSE_API_TOKEN}
+      - SHOW_HIDDEN=${SHOW_HIDDEN}
+      - DATAVERSE_COLLECTIONS=${DATAVERSE_COLLECTIONS}
+      - SERVER_PORT=${SERVER_PORT:-3001}
+      # Allow requests from localhost (browser calls the backend directly)
+      - CORS_ORIGIN=http://localhost:5173
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # Frontend React Application
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "${VITE_PORT:-5173}:5173"
+    environment:
+      - VITE_DATAVERSE_BASE_URL=${VITE_DATAVERSE_BASE_URL}
+      # Frontend calls backend through localhost (browser-side)
+      - VITE_API_BASE_URL=http://localhost:${SERVER_PORT:-3001}/api
+      - VITE_USE_BACKEND=${VITE_USE_BACKEND:-true}
+      - VITE_PORT=5173
+      - VITE_ALLOWED_HOSTS=${VITE_ALLOWED_HOSTS}
+    depends_on:
+      - backend
+    networks:
+      - app-network
+    volumes:
+      - ./src:/app/src
+      - ./public:/app/public
+    restart: unless-stopped
+
+networks:
+  app-network:
+    driver: bridge

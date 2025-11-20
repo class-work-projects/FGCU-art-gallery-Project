@@ -15,7 +15,11 @@ export default function AudioPage() {
     if (activeId === id) setActiveId(null);
   };
 
-  const items = (data?.items || []).filter((i): i is DataverseSearchFileItem => i.type === 'file');
+  const items = (data?.items || []).filter((i): i is DataverseSearchFileItem => {
+    if (i.type !== 'file') return false;
+    const fileName = i.name?.toLowerCase() || '';
+    return fileName.endsWith('.mp3') || fileName.endsWith('.wav');
+  });
 
   return (
     <div className="flex flex-col gap-6">

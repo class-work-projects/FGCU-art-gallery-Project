@@ -1,20 +1,19 @@
 import axios from 'axios';
 import { DataverseSearchResponse, ArtworkMetadata } from '../types/dataverse';
 
-// Cast import.meta to any to accommodate environments where Vite's ImportMetaEnv typing isn't declared yet
-const BASE_URL = (import.meta as any).env?.VITE_DATAVERSE_BASE_URL || 'https://dataverse.fgcu.edu';
+// Check if we should use backend proxy or connect directly to Dataverse
+const USE_BACKEND = (import.meta as any).env?.VITE_USE_BACKEND === 'true';
+const API_BASE_URL = (import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:3001/api';
+const DATAVERSE_BASE_URL = (import.meta as any).env?.VITE_DATAVERSE_BASE_URL || 'https://dataverse.fgcu.edu';
+
+// Use backend proxy or direct Dataverse API
+const BASE_URL = USE_BACKEND ? API_BASE_URL : `${DATAVERSE_BASE_URL}/api`;
 
 const api = axios.create({
-  baseURL: `${BASE_URL}/api`,
+  baseURL: BASE_URL,
   headers: {
     'Content-Type': 'application/json'
   }
-});
-
-api.interceptors.request.use((config) => {
-  const key = (import.meta as any).env?.VITE_DATAVERSE_API_TOKEN;
-  if (key) config.headers['X-Dataverse-key'] = key;
-  return config;
 });
 
 export interface SearchParams {
@@ -26,6 +25,7 @@ export interface SearchParams {
   show_facets?: boolean;
   fq?: string[]; // filter queries
   metadata_fields?: string[]; // request extra metadata
+  show_hidden?: boolean; // include unpublished/draft content
 }
 
 export async function searchArtworks(params: SearchParams): Promise<DataverseSearchResponse['data']> {
@@ -69,8 +69,8 @@ export async function listDatasetFiles(datasetIdOrPid: string, version = ':lates
   // By persistentId: /datasets/:persistentId/versions/:latest/files?persistentId=doi:... 
   // By numeric id:   /datasets/{id}/versions/:latest/files
   const path = isPid
-    ? '/datasets/:persistentId/versions/:latest/files'
-    : `/datasets/${datasetIdOrPid}/versions/:latest/files`;
+    ? `/datasets/:persistentId/versions/${version}/files`
+    : `/datasets/${datasetIdOrPid}/versions/${version}/files`;
   const response = await api.get(path, {
     params: isPid ? { persistentId: datasetIdOrPid } : undefined
   });
@@ -78,7 +78,10 @@ export async function listDatasetFiles(datasetIdOrPid: string, version = ':lates
 }
 
 export function buildDownloadFileUrl(fileId: string | number, thumbnail = false) {
-  const base = `${BASE_URL}/api/access/datafile/${fileId}`;
+  // Use backend proxy or direct Dataverse URL based on configuration
+  const base = USE_BACKEND 
+    ? `${API_BASE_URL}/access/datafile/${fileId}`
+    : `${DATAVERSE_BASE_URL}/api/access/datafile/${fileId}`;
   return thumbnail ? `${base}?imageThumb=true` : base;
 }
 
