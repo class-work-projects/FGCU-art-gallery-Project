@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import ArtworkCard from '../components/ArtworkCard';
 import { useImageDatasets } from '../hooks/useImageDatasets';
 import FilterSelector from '../components/FilterSelector';
@@ -18,9 +18,10 @@ export default function GalleryPage() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const scrollToTop = () => {
+  const scrollToTop = useCallback(() => {
+    if (typeof window === 'undefined') return;
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  }, []);
 
   return (
     <div className="flex flex-col gap-12">
